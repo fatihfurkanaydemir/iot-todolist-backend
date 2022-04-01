@@ -1,11 +1,15 @@
 import json
-from flask import Flask, jsonify, request, g
-from flask_cors import CORS
+from flask import Flask, jsonify, request, g, render_template
+from flask_cors import CORS, cross_origin
 from database import Database
 
-app = Flask(__name__)
-cors = CORS(app)
+app = Flask(__name__, static_folder='./static', static_url_path='/')
+CORS(app)
 db = Database(app)
+
+@app.route("/")
+def index():
+   return app.send_static_file('index.html')
 
 @app.route('/api/v1/todos', methods=['GET'])
 def get_todos():
