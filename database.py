@@ -103,6 +103,7 @@ class Database():
   def get_todos(self):
     query = """
             SELECT * FROM todo
+            ORDER BY id
             """
     
     db = self.get_db()
