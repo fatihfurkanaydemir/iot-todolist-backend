@@ -26,6 +26,10 @@ def index():
 def get_todos():
   return jsonify(db.get_todos())
 
+@app.route('/api/v1/todos/<id>', methods=['GET'])
+def get_todo(id):
+    return jsonify(db.get_todo(id))
+
 @app.route('/api/v1/todos', methods=['POST'])
 def add_todo():
   todo = json.loads(request.data)
@@ -57,8 +61,8 @@ def close_connection(exception):
         db.close()
 
 if __name__ == '__main__':
-    oledProcess = mp.Process(target=oled.oled_screen);
-    oledProcess.start()
+#    oledProcess = mp.Process(target=oled.oled_screen);
+#    oledProcess.start()
     waitress.serve(app, host='0.0.0.0', port='80')
-    oledProcess.join()
+#    oledProcess.join()
 
