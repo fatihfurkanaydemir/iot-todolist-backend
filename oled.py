@@ -3,16 +3,10 @@ from luma.core.render import canvas
 from luma.oled.device import sh1106
 from threading import Thread
 import time
-import datetime
-import math
 import requests
 import pigpio
-import json
 
 API_URL = "http://localhost/api/v1/todos"
-
-serial = i2c(port=1, address=0x3C)
-device = sh1106(serial)
 
 MAX_CHAR_ON_LINE = 20
 LEFT_MARGIN = 4
@@ -26,8 +20,6 @@ GPIO_PREV_PIN = 26
 GPIO_MARK_PIN = 25
 GPIO_NEXT_PIN = 24
 GPIO_TIMER_PIN = 23
-
-current_todo_id = -1
 
 pi = pigpio.pi()
 pi.set_mode(GPIO_PREV_PIN, pigpio.INPUT)
@@ -67,9 +59,6 @@ class Timer:
         self.completed = True
         if(self.func != None): self.func()
 
-pomodoro_remaining_time = POMODORO_TIME
-timer_finished = True
-
 def pomodoro_tick(remaining_time):
     global pomodoro_remaining_time
     pomodoro_remaining_time = remaining_time
@@ -78,14 +67,23 @@ def pomodoro_finish():
     global timer_finished
     timer_finished = False
     time.sleep(2)
+
     with canvas(device) as draw:
         draw.rectangle(device.bounding_box, outline="white", fill="black")
         draw.text((20, 30), "TIMER FINISHED", fill="white")
 
     global pomodoro_remaining_time
     pomodoro_remaining_time = POMODORO_TIME
+
     time.sleep(4)
     timer_finished = True
+
+current_todo_id = -1
+pomodoro_remaining_time = POMODORO_TIME
+timer_finished = True
+
+serial = i2c(port=1, address=0x3C)
+device = sh1106(serial)
 
 timer = Timer(pomodoro_finish, pomodoro_tick)
 
@@ -159,8 +157,8 @@ def button_press(pin, level, tick):
         try:
             requests.put(API_URL, json=current_todo_id)
             current_todo_id = -1
-        except Exception as ex:
-            print("Exception: " + str(ex))
+        except: pass
+            
 
     elif(pin == GPIO_NEXT_PIN):
         try:
