@@ -4,7 +4,7 @@ from luma.oled.device import sh1106
 import time
 import requests
 import pigpio
-import timer
+from timer import Timer
 
 API_URL = "http://localhost/api/v1/todos"
 
