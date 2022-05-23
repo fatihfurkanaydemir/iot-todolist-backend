@@ -1,10 +1,10 @@
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
 from luma.oled.device import sh1106
-from threading import Thread
 import time
 import requests
 import pigpio
+import timer
 
 API_URL = "http://localhost/api/v1/todos"
 
@@ -31,33 +31,6 @@ pi.set_glitch_filter(GPIO_PREV_PIN, 10000)
 pi.set_glitch_filter(GPIO_MARK_PIN, 10000)
 pi.set_glitch_filter(GPIO_NEXT_PIN, 10000)
 pi.set_glitch_filter(GPIO_TIMER_PIN, 10000)
-
-class Timer:
-  def __init__(self, func, tick):
-    self.completed = False
-    self.func = func
-    self.tick = tick
-    self.running = False
-
-  def start(self, time):
-    self.time = time
-    self.thread = Thread(target=self.run)
-    self.running = True
-    self.completed = False
-    self.thread.start()
-
-  def stop(self):
-    self.running = False
-
-  def run(self):
-    while(not self.completed and self.running):
-      time.sleep(1)
-      if(self.tick != None): self.tick(self.time)
-      self.time = self.time - 1
-      if(self.time <= 0):
-        self.running = False
-        self.completed = True
-        if(self.func != None): self.func()
 
 def pomodoro_tick(remaining_time):
     global pomodoro_remaining_time
